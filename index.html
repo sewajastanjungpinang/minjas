@@ -40,6 +40,12 @@ body { margin: 0; background: var(--cream); color: var(--ink); font-size: 16px; 
 .btn { border: 0; border-radius: 4px; padding: 0 18px; font-weight: 700; font-size: 16px; cursor: pointer; background: var(--maroon); color: #FFFFFF; }
 .btn:hover { background: var(--maroon-bright); }
 .btn:disabled { opacity: .6; cursor: default; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; white-space: normal; }
+.act { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 700; text-decoration: none; color: #FFFFFF; }
+.act.wa { background: #1F8F4E; }
+.act.wa:hover { background: #18773F; }
+.act.maps { background: var(--maroon); }
+.act.maps:hover { background: var(--maroon-bright); }
 .fine { font-size: 13px; color: var(--muted); padding: 0 18px 14px; background: var(--white); }
 .fine a { color: var(--maroon); font-weight: 700; }
 </style>
@@ -68,7 +74,9 @@ body { margin: 0; background: var(--cream); color: var(--ink); font-size: 16px; 
 
 <script>
 // ===== GANTI dengan URL /exec Apps Script kamu (Deploy > Manage deployments) =====
-var API_URL = "https://script.google.com/macros/s/AKfycbxsQcOhChwXaMLMCeLWX_5Ue3gKsW7hPpY8oYpMxVCo4sYmrMvdejYiL_rvyZIyL-Ja1g/exec";
+var WA_URL = "https://wa.me/6283152347759";
+var MAPS_URL = "https://share.google/1yjWlfkaWSRbf866i";
+var API_URL ="https://script.google.com/macros/s/AKfycbxsQcOhChwXaMLMCeLWX_5Ue3gKsW7hPpY8oYpMxVCo4sYmrMvdejYiL_rvyZIyL-Ja1g/exec";
 
 (function () {
   var msgs = document.getElementById("msgs");
@@ -94,6 +102,32 @@ var API_URL = "https://script.google.com/macros/s/AKfycbxsQcOhChwXaMLMCeLWX_5Ue3
     msgs.appendChild(d);
     msgs.scrollTop = msgs.scrollHeight;
     return d;
+  }
+
+  // Tampilkan jawaban bot + tombol WhatsApp / Google Maps bila relevan
+  function showReply(bubble, text) {
+    bubble.textContent = text;
+    var t = text.toLowerCase();
+    var btns = [];
+    if (t.indexOf("whatsapp") > -1 || t.indexOf("083152347759") > -1) {
+      btns.push({ cls: "wa", label: "💬 Chat Admin di WhatsApp", href: WA_URL });
+    }
+    if (t.indexOf("rajawali") > -1 || t.indexOf("google maps") > -1) {
+      btns.push({ cls: "maps", label: "📍 Buka Google Maps", href: MAPS_URL });
+    }
+    if (!btns.length) return;
+    var box = document.createElement("div");
+    box.className = "actions";
+    btns.forEach(function (b) {
+      var a = document.createElement("a");
+      a.className = "act " + b.cls;
+      a.href = b.href;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = b.label;
+      box.appendChild(a);
+    });
+    bubble.appendChild(box);
   }
 
   function done() {
@@ -122,7 +156,7 @@ var API_URL = "https://script.google.com/macros/s/AKfycbxsQcOhChwXaMLMCeLWX_5Ue3
       .then(function (res) { return res.json(); })
       .then(function (r) {
         if (r && r.reply) {
-          bubble.textContent = r.reply;
+          showReply(bubble, r.reply);
           turns.push({ role: "assistant", content: r.reply });
         } else {
           bubble.textContent = (r && r.error) || "Asisten sedang bermasalah. Coba lagi sebentar lagi.";
@@ -130,7 +164,7 @@ var API_URL = "https://script.google.com/macros/s/AKfycbxsQcOhChwXaMLMCeLWX_5Ue3
         }
       })
       .catch(function () {
-        bubble.textContent = "Tidak bisa terhubung. Coba lagi sebentar lagi, atau chat Admin di WhatsApp 083152347759.";
+        showReply(bubble, "Tidak bisa terhubung. Coba lagi sebentar lagi, atau chat Admin di WhatsApp 083152347759.");
         turns.pop();
       })
       .then(function () { clearTimeout(timer); done(); });
