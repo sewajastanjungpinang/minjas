@@ -75,7 +75,7 @@ body { margin: 0; background: var(--cream); color: var(--ink); font-size: 16px; 
 <script>
 // ===== GANTI dengan URL /exec Apps Script kamu (Deploy > Manage deployments) =====
 var WA_URL = "https://wa.me/6283152347759";
-var MAPS_URL = "https://share.google/1yjWlfkaWSRbf866i";
+var MAPS_URL = "https://share.google/KdFeXNTAPom0m7L9y";
 var API_URL ="https://script.google.com/macros/s/AKfycbxsQcOhChwXaMLMCeLWX_5Ue3gKsW7hPpY8oYpMxVCo4sYmrMvdejYiL_rvyZIyL-Ja1g/exec";
 
 (function () {
@@ -109,10 +109,10 @@ var API_URL ="https://script.google.com/macros/s/AKfycbxsQcOhChwXaMLMCeLWX_5Ue3g
     bubble.textContent = text;
     var t = text.toLowerCase();
     var btns = [];
-    if (t.indexOf("whatsapp") > -1 || t.indexOf("083152347759") > -1) {
+    if (/whatsapp|083152347759|\bwa\b|admin/.test(t)) {
       btns.push({ cls: "wa", label: "💬 Chat Admin di WhatsApp", href: WA_URL });
     }
-    if (t.indexOf("rajawali") > -1 || t.indexOf("google maps") > -1) {
+    if (/rajawali|google maps|alamat|lokasi|address|location|batu 9/.test(t)) {
       btns.push({ cls: "maps", label: "📍 Buka Google Maps", href: MAPS_URL });
     }
     if (!btns.length) return;
@@ -176,7 +176,7 @@ var API_URL ="https://script.google.com/macros/s/AKfycbxsQcOhChwXaMLMCeLWX_5Ue3g
     if (b && !b.disabled) ask(b.textContent);
   });
 
-  statusEl.textContent = "Siap menjawab";
+  statusEl.textContent = "Siap menjawab · v2";
   setBusy(false);
 })();
 </script>
